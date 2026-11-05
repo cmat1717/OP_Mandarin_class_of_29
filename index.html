@@ -172,7 +172,7 @@
 
     <div id="feedbackBox" class="feedback"></div>
   </div>
-  <script type="importmap">
+    <script type="importmap">
     {
       "imports": {
         "@google/genai": "https://esm.sh"
@@ -344,9 +344,9 @@
       c.width = v.videoWidth;
       c.height = v.videoHeight;
       c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
-      const dataUrl = c.toDataURL("image/jpeg");
+      const dataUrl = c.toToDataURL ? c.toToDataURL("image/jpeg") : c.toDataURL("image/jpeg");
       const rawData = dataUrl.split(",");
-      capturedImageBase64 = rawData[1]; 
+      capturedImageBase64 = rawData[1] || rawData[0]; 
       const p = document.getElementById("snapshotPreview");
       p.src = dataUrl;
       p.style.display = "block";
@@ -451,3 +451,4 @@
   </script>
 </body>
 </html>
+
