@@ -199,7 +199,7 @@ async function checkAnswer() {
   document.getElementById("userInput").disabled = true;
 
   try {
-    // FIXED: Correct wrapper initialization pattern for web bundles using an AQ. Key
+    // Correct wrapper initialization pattern for web bundles using an AQ. Key
     const genAI = new window.GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -217,7 +217,7 @@ async function checkAnswer() {
       partsArray = [{ text: instruction }];
     }
 
-    // FIXED: Wrapped payload object explicitly to fulfill new key protocol demands
+    // Wrapped payload object explicitly to fulfill new key protocol demands
     const resultObj = await model.generateContent({
       contents: [{ role: "user", parts: partsArray }]
     });
@@ -252,6 +252,3 @@ window.onload = function() {
   const savedKey = localStorage.getItem("gemini_api_key");
   if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
 };
-</script>
-</body>
-</html>
