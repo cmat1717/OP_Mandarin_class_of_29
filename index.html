@@ -1,139 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chinese Practice App</title>
   <style>
-    body { 
-      font-family: sans-serif; 
-      background: #f8fafc; 
-      color: #1e293b; 
-      padding: 20px; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      min-height: 100vh; 
-      margin: 0; 
+    body {
+      font-family: sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
     }
-    .container { 
-      background: white; 
-      padding: 30px; 
-      border-radius: 20px; 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-      max-width: 420px; 
-      width: 100%; 
-      text-align: center; 
-      position: relative; 
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      position: relative;
     }
-    .settings-toggle { 
-      position: absolute; 
-      top: 15px; 
-      right: 15px; 
-      background: none; 
-      border: none; 
-      font-size: 20px; 
-      cursor: pointer; 
+
+    .settings-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
     }
-    .api-panel { 
-      background: #f1f5f9; 
-      border-radius: 12px; 
-      padding: 12px; 
-      margin-bottom: 20px; 
-      display: none; 
-      text-align: left; 
+
+    .api-panel {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 20px;
+      display: none;
+      text-align: left;
     }
-    .api-input-group { 
-      display: flex; 
-      gap: 8px; 
-      margin-top: 5px; 
+
+    .api-input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 5px;
     }
-    .api-input-group input { 
-      flex: 1; 
-      padding: 8px; 
-      border: 1px solid #cbd5e1; 
-      border-radius: 6px; 
+
+    .api-input-group input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
     }
-    .card { 
-      border: 1px solid #e2e8f0; 
-      border-radius: 12px; 
-      padding: 20px; 
-      margin-bottom: 20px; 
+
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
-    .prompt-text { 
-      font-size: 20px; 
-      font-weight: 700; 
+
+    .prompt-text {
+      font-size: 20px;
+      font-weight: 700;
     }
-    .input-area { 
-      position: relative; 
-      margin-bottom: 20px; 
+
+    .input-area {
+      position: relative;
+      margin-bottom: 20px;
     }
-    input[type="text"] { 
-      width: 100%; 
-      padding: 14px 40px 14px 14px; 
-      font-size: 18px; 
-      border: 2px solid #e2e8f0; 
-      border-radius: 10px; 
-      box-sizing: border-box; 
-      text-align: center; 
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 40px 14px 14px;
+      font-size: 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      box-sizing: border-box;
+      text-align: center;
     }
-    .camera-trigger { 
-      position: absolute; 
-      right: 12px; 
-      top: 50%; 
-      transform: translateY(-50%); 
-      background: none; 
-      border: none; 
-      font-size: 18px; 
-      cursor: pointer; 
+
+    .camera-trigger {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
     }
-    .camera-container { 
-      display: none; 
-      width: 100%; 
-      border-radius: 10px; 
-      overflow: hidden; 
-      margin-bottom: 20px; 
-      background: #000; 
-      position: relative; 
+
+    .camera-container {
+      display: none;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: #000;
+      position: relative;
     }
-    video { 
-      width: 100%; 
-      display: block; 
+
+    video {
+      width: 100%;
+      display: block;
     }
-    .snapshot-preview { 
-      display: none; 
-      width: 100%; 
-      border-radius: 10px; 
-      margin-bottom: 20px; 
+
+    .snapshot-preview {
+      display: none;
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
     }
-    button.main-btn { 
-      background: #4f46e5; 
-      color: white; 
-      border: none; 
-      padding: 14px; 
-      font-size: 16px; 
-      border-radius: 10px; 
-      cursor: pointer; 
-      font-weight: 700; 
-      width: 100%; 
+
+    button.main-btn {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      width: 100%;
     }
-    .feedback { 
-      margin-top: 20px; 
-      padding: 15px; 
-      border-radius: 12px; 
-      display: none; 
-      font-weight: 600; 
-      text-align: left; 
+
+    .feedback {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      display: none;
+      font-weight: 600;
+      text-align: left;
     }
-    .correct { 
-      background: #ecfdf5; 
-      color: #065f46; 
-      border: 1px solid #a7f3d0; 
+
+    .correct {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
     }
-    .incorrect { 
-      background: #fef2f2; 
-      color: #991b1b; 
-      border: 1px solid #fca5a5; 
+
+    .incorrect {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
     }
   </style>
 </head>
@@ -142,11 +159,11 @@
     <button class="settings-toggle" id="toggleSettingsBtn">⚙️</button>
     <h1>Translate to Chinese</h1>
     <div style="color:#6366f1; margin-bottom:20px; font-weight:600;">Random Worksheet Sentences</div>
-    
+
     <div id="apiPanel" class="api-panel">
       <label style="font-size:12px; font-weight:700; color:#64748b;">GEMINI API KEY</label>
       <div class="api-input-group">
-        <input type="password" id="apiKeyInput" placeholder="AQ...">
+        <input type="password" id="apiKeyInput" placeholder="AQ..." />
         <button id="saveApiKeyBtn" style="padding:8px 12px; border-radius:6px; background:#0f172a; color:white; border:none;">Save</button>
       </div>
     </div>
@@ -157,13 +174,13 @@
 
     <div id="cameraContainer" class="camera-container">
       <video id="videoStream" autoplay playsinline></video>
-      <button id="captureSnapshotBtn" style="position:absolute; bottom:10px; left:10px; width:calc(100% - 20px); background:rgba(0,0,0,0.6); color:white; border:none; padding:8px; border-radius:6px;">📸 Take Photo</button>
+      <button id="captureSnapshotBtn" style="position:absolute; bottom:10px; left:10px; width:calc(100% - 20px); background:rgba(0,0,0,0.6); color:white; border:none; padding:8px; border-radius:6px;">Capture Photo</button>
     </div>
 
-    <img id="snapshotPreview" class="snapshot-preview" alt="Preview">
+    <img id="snapshotPreview" class="snapshot-preview" alt="Preview" />
 
     <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type translation..." autocomplete="off">
+      <input type="text" id="userInput" placeholder="Type translation..." autocomplete="off" />
       <button class="camera-trigger" id="cameraBtn">📷</button>
     </div>
 
@@ -172,6 +189,7 @@
 
     <div id="feedbackBox" class="feedback"></div>
   </div>
+
   <script type="importmap">
     {
       "imports": {
@@ -179,6 +197,7 @@
       }
     }
   </script>
+
   <script type="module">
     import { GoogleGenAI } from "@google/genai";
 
@@ -202,7 +221,8 @@
     ];
 
     let currentTarget = { english: "", chinese: "" };
-    let localStream = null, capturedImageBase64 = null;
+    let localStream = null;
+    let capturedImageBase64 = null;
 
     function getRandomElement(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
@@ -213,15 +233,16 @@
       const isPlural = Math.random() > 0.5;
       const subEng = isPlural ? sub.pluralEng : sub.eng;
       const subCh = isPlural ? sub.pluralCh : sub.ch;
-      const patternType = Math.floor(Math.random() * 5); 
+      const patternType = Math.floor(Math.random() * 5);
       let eng = "";
       let ch = "";
 
-      switch(patternType) {
-        case 0:
+      switch (patternType) {
+        case 0: {
           const id = getRandomElement(identities);
           const isNegative = Math.random() > 0.5;
           const isQuestion = !isNegative && Math.random() > 0.5;
+
           if (isNegative) {
             eng = `${subEng} are not ${id.eng}s.`;
             ch = `${subCh}不是${id.ch}`;
@@ -229,14 +250,17 @@
             eng = `Is ${subEng.toLowerCase()} a ${id.eng}?`;
             ch = `${subCh}是${id.ch}吗`;
           } else {
-            eng = `${subEng} ${isPlural ? 'are' : 'is'} a ${id.eng}.`;
+            eng = `${subEng} ${isPlural ? "are" : "is"} a ${id.eng}.`;
             ch = `${subCh}是${id.ch}`;
           }
           break;
-        case 1:
+        }
+
+        case 1: {
           const lang = getRandomElement(languages);
           const usesAll = isPlural && Math.random() > 0.5;
           const languageQuestion = Math.random() > 0.5;
+
           if (languageQuestion) {
             eng = `Does ${subEng.toLowerCase()} study ${lang.eng}?`;
             ch = `${subCh}学${lang.ch}吗`;
@@ -248,9 +272,12 @@
             ch = `${subCh}学${lang.ch}`;
           }
           break;
-        case 2:
+        }
+
+        case 2: {
           const hasFriends = Math.random() > 0.5;
           const possessionQuestion = Math.random() > 0.5;
+
           if (possessionQuestion) {
             eng = `Do ${subEng.toLowerCase()} have friends?`;
             ch = `${subCh}有朋友吗`;
@@ -262,8 +289,11 @@
             ch = `${subCh}没有朋友`;
           }
           break;
-        case 3:
+        }
+
+        case 3: {
           const phraseType = Math.floor(Math.random() * 3);
+
           if (phraseType === 0) {
             eng = "Hello!";
             ch = "你好";
@@ -275,26 +305,32 @@
             ch = "再见";
           }
           break;
-        case 4:
+        }
+
+        case 4: {
           const isVery = Math.random() > 0.5;
+
           if (isVery) {
-            eng = `${subEng} ${isPlural ? 'are' : 'is'} very good.`;
+            eng = `${subEng} ${isPlural ? "are" : "is"} very good.`;
             ch = `${subCh}很好`;
           } else {
-            eng = `${subEng} ${isPlural ? 'are' : 'is'} good.`;
+            eng = `${subEng} ${isPlural ? "are" : "is"} good.`;
             ch = `${subCh}好`;
           }
           break;
+        }
       }
 
-      eng = eng.replace("I is a", "I am a")
-               .replace("I are a", "I am a")
-               .replace("Does we", "Do we")
-               .replace("Does they", "Do they")
-               .replace("Is I a", "Am I a");
+      eng = eng
+        .replace("I is a", "I am a")
+        .replace("I are a", "I am a")
+        .replace("Does we", "Do we")
+        .replace("Does they", "Do they")
+        .replace("Is I a", "Am I a");
 
       return { english: eng, chinese: ch };
     }
+
     function toggleSettings() {
       const p = document.getElementById("apiPanel");
       p.style.display = p.style.display === "block" ? "none" : "block";
@@ -302,7 +338,7 @@
 
     function saveApiKey() {
       const k = document.getElementById("apiKeyInput").value.trim();
-      if(k) {
+      if (k) {
         localStorage.setItem("gemini_api_key", k);
         alert("Key saved!");
         toggleSettings();
@@ -343,13 +379,17 @@
       const c = document.createElement("canvas");
       c.width = v.videoWidth;
       c.height = v.videoHeight;
-      c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+      const ctx = c.getContext("2d");
+      ctx.drawImage(v, 0, 0, c.width, c.height);
+
       const dataUrl = c.toDataURL("image/jpeg");
       const rawData = dataUrl.split(",");
-      capturedImageBase64 = rawData[1]; 
+      capturedImageBase64 = rawData[1];
+
       const p = document.getElementById("snapshotPreview");
       p.src = dataUrl;
       p.style.display = "block";
+
       document.getElementById("userInput").style.display = "none";
       document.getElementById("cameraBtn").style.display = "none";
       stopCamera();
@@ -362,12 +402,13 @@
         localStream = null;
       }
     }
+
     async function checkAnswer() {
       const input = document.getElementById("userInput").value.trim();
       const target = currentTarget.english;
       const expected = currentTarget.chinese;
       const key = localStorage.getItem("gemini_api_key");
-      const hasPhoto = (capturedImageBase64 !== null && capturedImageBase64 !== undefined && capturedImageBase64 !== "");
+      const hasPhoto = capturedImageBase64 !== null && capturedImageBase64 !== undefined && capturedImageBase64 !== "";
 
       if (!input && !hasPhoto) return alert("Type or take a photo first!");
       if (!key) {
@@ -383,20 +424,24 @@
 
       try {
         const ai = new GoogleGenAI({ apiKey: key });
-        let contentsArray = [];
 
+        const promptText = hasPhoto
+          ? `Grade this student's handwritten image Chinese translation. English target description: "${target}". Expected target baseline: "${expected}". Return raw JSON matching the schema { "isCorrect": boolean, "feedback": string }`
+          : `Grade this student's typed Chinese translation. English translation target: "${target}". Expected baseline target string: "${expected}". Student raw input text: "${input}". Return raw JSON matching the schema { "isCorrect": boolean, "feedback": string }`;
+
+        const parts = [{ text: promptText }];
         if (hasPhoto) {
-          contentsArray = [
-            { text: `Grade this student's handwritten image Chinese translation. English target description: "${target}". Expected target baseline: "${expected}". Return raw JSON matching the schema rule provided.` },
-            { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
-          ];
-        } else {
-          contentsArray = [{ text: `Grade this student's typed Chinese translation. English translation target: "${target}". Expected baseline target string: "${expected}". Student raw input text: "${input}". Return raw JSON matching the schema rule provided.` }];
+          parts.push({
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: capturedImageBase64
+            }
+          });
         }
 
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
-          contents: contentsArray,
+          model: "gemini-1.5-flash",
+          contents: [{ role: "user", parts }],
           config: {
             responseMimeType: "application/json",
             responseSchema: {
@@ -439,8 +484,11 @@
       document.getElementById("nextBtn").addEventListener("click", loadSentence);
 
       loadSentence();
+
       const sk = localStorage.getItem("gemini_api_key");
-      if(sk) document.getElementById("apiKeyInput").value = sk;
+      if (sk) {
+        document.getElementById("apiKeyInput").value = sk;
+      }
     }
 
     if (document.readyState === "loading") {
