@@ -5,129 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chinese Practice App</title>
   <style>
-    body { 
-      font-family: sans-serif; 
-      background: #f8fafc; 
-      color: #1e293b; 
-      padding: 20px; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      min-height: 100vh; 
-      margin: 0; 
-    }
-    .container { 
-      background: white; 
-      padding: 30px; 
-      border-radius: 20px; 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-      max-width: 420px; 
-      width: 100%; 
-      text-align: center; 
-      position: relative; 
-    }
-    .settings-toggle { 
-      position: absolute; 
-      top: 15px; 
-      right: 15px; 
-      background: none; 
-      border: none; 
-      font-size: 20px; 
-      cursor: pointer; 
-    }
-    .api-panel { 
-      background: #f1f5f9; 
-      border-radius: 12px; 
-      padding: 12px; 
-      margin-bottom: 20px; 
-      display: none; 
-      text-align: left; 
-    }
-    .api-input-group { 
-      display: flex; 
-      gap: 8px; 
-      margin-top: 5px; 
-    }
-    .api-input-group input { 
-      flex: 1; 
-      padding: 8px; 
-      border: 1px solid #cbd5e1; 
-      border-radius: 6px; 
-    }
-    .card { 
-      border: 1px solid #e2e8f0; 
-      border-radius: 12px; 
-      padding: 20px; 
-      margin-bottom: 20px; 
-    }
-    .prompt-text { 
-      font-size: 20px; 
-      font-weight: 700; 
-    }
-    .input-area { 
-      position: relative; 
-      margin-bottom: 20px; 
-    }
-    input[type="text"] { 
-      width: 100%; 
-      padding: 14px 40px 14px 14px; 
-      font-size: 18px; 
-      border: 2px solid #e2e8f0; 
-      border-radius: 10px; 
-      box-sizing: border-box; 
-      text-align: center; 
-    }
-    .camera-trigger { 
-      position: absolute; 
-      right: 12px;  top: 50%; 
-      transform: translateY(-50%); 
-      background: none; 
-      border: none; 
-      font-size: 18px; 
-      cursor: pointer; 
-    }
-    .camera-container { 
-      display: none; 
-      width: 100%; 
-      border-radius: 10px; 
-      overflow: hidden; 
-      margin-bottom: 20px; 
-      background: #000; 
-      position: relative; 
-    }
+    body { font-family: sans-serif; background: #f8fafc; color: #1e293b; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 420px; width: 100%; text-align: center; position: relative; }
+    .settings-toggle { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; }
+    .api-panel { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 20px; display: none; text-align: left; }
+    .api-input-group { display: flex; gap: 8px; margin-top: 5px; }
+    .api-input-group input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .prompt-text { font-size: 20px; font-weight: 700; }
+    .input-area { position: relative; margin-bottom: 20px; }
+    input[type="text"] { width: 100%; padding: 14px 40px 14px 14px; font-size: 18px; border: 2px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; text-align: center; }
+    .camera-trigger { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; }
+    .camera-container { display: none; width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 20px; background: #000; position: relative; }
     video { width: 100%; display: block; }
-    .snapshot-preview { 
-      display: none; 
-      width: 100%; 
-      border-radius: 10px; 
-      margin-bottom: 20px; 
-    }
-    button.main-btn { 
-      background: #4f46e5; 
-      color: white; 
-      border: none; 
-      padding: 14px; 
-      font-size: 16px; 
-      border-radius: 10px; 
-      cursor: pointer; 
-      font-weight: 700; 
-      width: 100%; 
-    }
-    .feedback { 
-      margin-top: 20px; 
-      padding: 15px; 
-      border-radius: 12px; 
-      display: none; 
-      font-weight: 600; 
-      text-align: left; 
-    }
+    .snapshot-preview { display: none; width: 100%; border-radius: 10px; margin-bottom: 20px; }
+    button.main-btn { background: #4f46e5; color: white; border: none; padding: 14px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; }
+    .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; font-weight: 600; text-align: left; }
     .correct { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
     .incorrect { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Restored inline onclick triggers to run completely outside the module error boundaries -->
     <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
     <h1>Translate to Chinese</h1>
     <div style="color:#6366f1; margin-bottom:20px; font-weight:600;">Random Worksheet Sentences</div>
@@ -161,7 +60,6 @@
 
     <div id="feedbackBox" class="feedback"></div>
   </div>
-  <!-- Safe browser distribution kit that bypasses import blocks on live hosting pages -->
   <script src="https://jsdelivr.net"></script>
   <script>
     const subjects = [
@@ -278,6 +176,7 @@
 
       return { english: eng, chinese: ch };
     }
+
     function toggleSettings() {
       const p = document.getElementById("apiPanel");
       p.style.display = p.style.display === "block" ? "none" : "block";
@@ -344,6 +243,7 @@
         localStream = null;
       }
     }
+
     async function checkAnswer() {
       const input = document.getElementById("userInput").value.trim();
       const target = currentTarget.english;
@@ -381,7 +281,7 @@
         }
 
         promptText += ` Respond ONLY with a raw JSON object matching this schema. Do not include markdown wraps or styling formatting: { "isCorrect": true/false, "feedback": "brief helpful explanation string" }`;
-        if (!capturedImageBase64) contentsPayload[0] = promptText;
+        if (!capturedImageBase64) contentsPayload = [promptText];
 
         const resultObj = await model.generateContent(contentsPayload);
         let rawText = resultObj.response.text().trim();
