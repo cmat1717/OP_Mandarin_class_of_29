@@ -27,16 +27,15 @@
 </head>
 <body>
   <div class="container">
-    <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
+    <button class="settings-toggle" id="toggleSettingsBtn">⚙️</button>
     <h1>Translate to Chinese</h1>
     <div style="color:#6366f1; margin-bottom:20px; font-weight:600;">Random Worksheet Sentences</div>
     
     <div id="apiPanel" class="api-panel">
       <label style="font-size:12px; font-weight:700; color:#64748b;">GEMINI API KEY</label>
       <div class="api-input-group">
-        <!-- FIXED: The input hint box text placeholder now displays the modern key prefix -->
         <input type="password" id="apiKeyInput" placeholder="AQ...">
-        <button onclick="saveApiKey()" style="padding:8px 12px; border-radius:6px; background:#0f172a; color:white; border:none;">Save</button>
+        <button id="saveApiKeyBtn" style="padding:8px 12px; border-radius:6px; background:#0f172a; color:white; border:none;">Save</button>
       </div>
     </div>
 
@@ -46,25 +45,31 @@
 
     <div id="cameraContainer" class="camera-container">
       <video id="videoStream" autoplay playsinline></video>
-      <button onclick="captureSnapshot()" style="position:absolute; bottom:10px; left:10px; width:calc(100% - 20px); background:rgba(0,0,0,0.6); color:white; border:none; padding:8px; border-radius:6px;">📸 Take Photo</button>
+      <button id="captureSnapshotBtn" style="position:absolute; bottom:10px; left:10px; width:calc(100% - 20px); background:rgba(0,0,0,0.6); color:white; border:none; padding:8px; border-radius:6px;">📸 Take Photo</button>
     </div>
 
     <img id="snapshotPreview" class="snapshot-preview" alt="Preview">
 
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Type translation..." autocomplete="off">
-      <button class="camera-trigger" id="cameraBtn" onclick="initiateCamera()">📷</button>
+      <button class="camera-trigger" id="cameraBtn">📷</button>
     </div>
 
-    <button id="actionBtn" class="main-btn" onclick="checkAnswer()">Check Answer</button>
-    <button id="nextBtn" class="main-btn" onclick="loadSentence()" style="display:none; background:#1e293b;">Next Sentence ➡️</button>
+    <button id="actionBtn" class="main-btn">Check Answer</button>
+    <button id="nextBtn" class="main-btn" style="display:none; background:#1e293b;">Next Sentence ➡️</button>
 
     <div id="feedbackBox" class="feedback"></div>
   </div>
 
-
-  <!-- Loads Google AI library and your split-up app.js code cleanly -->
-    <script src="https://jsdelivr.net"></script>
-  <script src="app.js?v=3"></script>
+  <!-- FIXED: Clean import map loading Google's modern AQ-compatible engine -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://esm.sh"
+      }
+    }
+  </script>
+  <!-- FIXED: Script initialized as type="module" to load app.js parameters natively -->
+  <script type="module" src="app.js?v=4"></script>
 </body>
 </html>
