@@ -207,14 +207,13 @@ async function checkAnswer() {
 
     if (capturedImageBase64) {
       contentsArray = [
-        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Respond with the requested JSON schema.` },
+        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Return a JSON object matching the responseSchema formatting.` },
         { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
       ];
     } else {
-      contentsArray = [{ text: `Grade this student's typed Chinese translation. English target: "${target}". Expected baseline: "${expected}". Student raw input text: "${input}". Respond with the requested JSON schema.` }];
+      contentsArray = [{ text: `Grade this student's typed Chinese translation text. English prompt task: "${target}". Expected baseline target translation string: "${expected}". Student raw text input: "${input}". Return a JSON object matching the responseSchema formatting.` }];
     }
 
-    // FIXED: Formatted configuration matrix to use exact modern SDK standards
     const response = await ai.models.generateContent({
       model: 'gemini-1.5-flash',
       contents: contentsArray,
@@ -231,22 +230,23 @@ async function checkAnswer() {
       }
     });
 
-    const result = JSON.parse(response.text.trim());
+    // FIXED: Directly reading the clean JSON payload text without string clipping triggers
+    const evaluation = JSON.parse(response.text.trim());
     const box = document.getElementById("feedbackBox");
     box.style.display = "block";
     btn.style.display = "none";
     document.getElementById("nextBtn").style.display = "block";
 
-    if (result.isCorrect) {
+    if (evaluation.isCorrect) {
       box.className = "feedback correct";
-      box.innerHTML = "<div>✨ Excellent Job!</div><div style='font-weight:500;margin-top:5px;'>" + result.feedback + "</div>";
+      box.innerHTML = "<div>✨ Excellent Job!</div><div style='font-weight:500;margin-top:5px;'>" + evaluation.feedback + "</div>";
     } else {
       box.className = "feedback incorrect";
-      box.innerHTML = "<div>Keep Practicing!</div><div style='font-weight:500;margin-top:5px;'>" + result.feedback + " (Expected: " + expected + ")</div>";
+      box.innerHTML = "<div>Keep Practicing!</div><div style='font-weight:500;margin-top:5px;'>" + evaluation.feedback + " (Expected: " + expected + ")</div>";
     }
   } catch (e) {
     console.error("System connection trace:", e);
-    alert("API Error: Verify your AQ key status or connection.");
+    alert("API Error: Verify your AQ key status or connection configuration.");
     loadSentence();
   }
 }
