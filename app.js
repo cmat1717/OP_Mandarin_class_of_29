@@ -1,5 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
-
+// FIXED: Completely removed the "import" command statement that freezes the layout engine
 const subjects = [
   { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
   { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
@@ -164,10 +163,7 @@ function captureSnapshot() {
   c.height = v.videoHeight;
   c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
   const dataUrl = c.toDataURL("image/jpeg");
-  
-  // FIXED: Explicitly selecting index [1] grabs ONLY the clean base64 data string
-  capturedImageBase64 = dataUrl.split(",")[1]; 
-  
+  capturedImageBase64 = dataUrl.split(",")[1]; // FIXED: Extract clean data array base string natively
   const p = document.getElementById("snapshotPreview");
   p.src = dataUrl;
   p.style.display = "block";
@@ -202,36 +198,38 @@ async function checkAnswer() {
   document.getElementById("userInput").disabled = true;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: key });
-    let contentsArray = [];
-
-    if (capturedImageBase64) {
-      contentsArray = [
-        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Return a JSON object matching the responseSchema formatting.` },
-        { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
-      ];
-    } else {
-      contentsArray = [{ text: `Grade this student's typed Chinese translation text. English prompt task: "${target}". Expected baseline target translation string: "${expected}". Student raw text input: "${input}". Return a JSON object matching the responseSchema formatting.` }];
-    }
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
-      contents: contentsArray,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "OBJECT",
-          properties: {
-            isCorrect: { type: "BOOLEAN" },
-            feedback: { type: "STRING" }
-          },
-          required: ["isCorrect", "feedback"]
-        }
+    // FIXED: Formatted generation block explicitly mapped to standalone global client requirements for AQ keys
+    const genAI = new window.GoogleGenerativeAI(key);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json"
       }
     });
 
-    // FIXED: Directly reading the clean JSON payload text without string clipping triggers
-    const evaluation = JSON.parse(response.text.trim());
+    let instruction = `Grade this student's translation. English target description: "${target}". Expected baseline: "${expected}". Respond ONLY with raw valid JSON matching this schema: { "isCorrect": true/false, "feedback": "brief response explain string" }`;
+    let contentsPayload = [];
+
+    if (capturedImageBase64) {
+      contentsPayload = [
+        { text: instruction },
+        { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
+      ];
+    } else {
+      instruction += ` The student typed: "${input}".`;
+      contentsPayload = [{ text: instruction }];
+    }
+
+    const resultObj = await model.generateContent({
+      contents: [{ role: "user", parts: contentsPayload }]
+    });
+    
+    let rawText = resultObj.response.text().trim();
+    if (rawText.includes("```")) {
+      rawText = rawText.replace(/```json|```/g, "").trim();
+    }
+
+    const evaluation = JSON.parse(rawText);
     const box = document.getElementById("feedbackBox");
     box.style.display = "block";
     btn.style.display = "none";
@@ -246,26 +244,13 @@ async function checkAnswer() {
     }
   } catch (e) {
     console.error("System connection trace:", e);
-    alert("API Error: Verify your AQ key status or connection configuration.");
+    alert("AI grading error. Loading a new target sentence.");
     loadSentence();
   }
 }
 
-function initApp() {
-  document.getElementById("toggleSettingsBtn").addEventListener("click", toggleSettings);
-  document.getElementById("saveApiKeyBtn").addEventListener("click", saveApiKey);
-  document.getElementById("cameraBtn").addEventListener("click", initiateCamera);
-  document.getElementById("captureSnapshotBtn").addEventListener("click", captureSnapshot);
-  document.getElementById("actionBtn").addEventListener("click", checkAnswer);
-  document.getElementById("nextBtn").addEventListener("click", loadSentence);
-
+window.onload = function() {
   loadSentence();
   const savedKey = localStorage.getItem("gemini_api_key");
   if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
-} else {
-  initApp();
-}
+};
