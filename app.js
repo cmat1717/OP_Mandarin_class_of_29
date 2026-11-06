@@ -1,3 +1,5 @@
+import { GoogleGenAI } from "@google/genai";
+
 const subjects = [
   { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
   { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
@@ -197,55 +199,71 @@ async function checkAnswer() {
   document.getElementById("userInput").disabled = true;
 
   try {
-    // FIXED: Properly pointing to the nested constructor required by the web bundle
-    const genAI = new window.GoogleGenerativeAI.GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    let instruction = `Grade this student's translation. English baseline prompt task: "${target}". Expected baseline target answer structure: "${expected}". `;
-    let partsArray = [];
+    // FIXED: Native initialization sequence matching modern AQ. keys precisely
+    const ai = new GoogleGenAI({ apiKey: key });
+    let contentsArray = [];
 
     if (capturedImageBase64) {
-      instruction += `Examine the handwritten picture response carefully. Respond ONLY with raw valid JSON: { "isCorrect": true/false, "feedback": "review text string" }`;
-      partsArray = [
-        { text: instruction },
+      contentsArray = [
+        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Return raw JSON.` },
         { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
       ];
     } else {
-      instruction += `The student typed: "${input}". Match meaning against base text. Respond ONLY with raw valid JSON: { "isCorrect": true/false, "feedback": "review text string" }`;
-      partsArray = [{ text: instruction }];
+      contentsArray = [{ text: `Grade this student's typed Chinese translation. English target: "${target}". Expected baseline: "${expected}". Student raw input text: "${input}". Return raw JSON.` }];
     }
 
-    const resultObj = await model.generateContent({
-      contents: [{ role: "user", parts: partsArray }]
+    // FIXED: Invoking strict responses using modern SDK definitions
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: contentsArray,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            isCorrect: { type: "BOOLEAN" },
+            feedback: { type: "STRING" }
+          },
+          required: ["isCorrect", "feedback"]
+        }
+      }
     });
-    
-    let rawText = resultObj.response.text().trim();
-    if (rawText.includes("```")) {
-      rawText = rawText.replace(/```json|```/g, "").trim();
-    }
 
-    const evaluation = JSON.parse(rawText);
+    const result = JSON.parse(response.text.trim());
     const box = document.getElementById("feedbackBox");
     box.style.display = "block";
     btn.style.display = "none";
     document.getElementById("nextBtn").style.display = "block";
 
-    if (evaluation.isCorrect) {
+    if (result.isCorrect) {
       box.className = "feedback correct";
-      box.innerHTML = "<div>✨ Excellent Job!</div><div style='font-weight:500;margin-top:5px;'>" + evaluation.feedback + "</div>";
+      box.innerHTML = "<div>✨ Excellent Job!</div><div style='font-weight:500;margin-top:5px;'>" + result.feedback + "</div>";
     } else {
       box.className = "feedback incorrect";
-      box.innerHTML = "<div>Keep Practicing!</div><div style='font-weight:500;margin-top:5px;'>" + evaluation.feedback + " (Expected: " + expected + ")</div>";
+      box.innerHTML = "<div>Keep Practicing!</div><div style='font-weight:500;margin-top:5px;'>" + result.feedback + " (Expected: " + expected + ")</div>";
     }
   } catch (e) {
-    console.error("Tracing system crash error:", e);
-    alert("AI grading error. Loading a new target sentence.");
+    console.error("System connection trace:", e);
+    alert("API Error: Verify your AQ key status.");
     loadSentence();
   }
 }
 
-window.onload = function() {
+function initApp() {
+  document.getElementById("toggleSettingsBtn").addEventListener("click", toggleSettings);
+  document.getElementById("saveApiKeyBtn").addEventListener("click", saveApiKey);
+  document.getElementById("cameraBtn").addEventListener("click", initiateCamera);
+  document.getElementById("captureSnapshotBtn").addEventListener("click", captureSnapshot);
+  document.getElementById("actionBtn").addEventListener("click", checkAnswer);
+  document.getElementById("nextBtn").addEventListener("click", loadSentence);
+
   loadSentence();
   const savedKey = localStorage.getItem("gemini_api_key");
   if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
-};
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
