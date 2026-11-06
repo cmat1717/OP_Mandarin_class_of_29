@@ -164,7 +164,10 @@ function captureSnapshot() {
   c.height = v.videoHeight;
   c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
   const dataUrl = c.toDataURL("image/jpeg");
-  capturedImageBase64 = dataUrl.split(","); 
+  
+  // FIXED: Explicitly selecting index [1] grabs ONLY the clean base64 data string
+  capturedImageBase64 = dataUrl.split(",")[1]; 
+  
   const p = document.getElementById("snapshotPreview");
   p.src = dataUrl;
   p.style.display = "block";
@@ -199,20 +202,19 @@ async function checkAnswer() {
   document.getElementById("userInput").disabled = true;
 
   try {
-    // FIXED: Native initialization sequence matching modern AQ. keys precisely
     const ai = new GoogleGenAI({ apiKey: key });
     let contentsArray = [];
 
     if (capturedImageBase64) {
       contentsArray = [
-        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Return raw JSON.` },
+        { text: `Grade this student's handwritten image Chinese translation. English target: "${target}". Expected baseline: "${expected}". Respond with the requested JSON schema.` },
         { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
       ];
     } else {
-      contentsArray = [{ text: `Grade this student's typed Chinese translation. English target: "${target}". Expected baseline: "${expected}". Student raw input text: "${input}". Return raw JSON.` }];
+      contentsArray = [{ text: `Grade this student's typed Chinese translation. English target: "${target}". Expected baseline: "${expected}". Student raw input text: "${input}". Respond with the requested JSON schema.` }];
     }
 
-    // FIXED: Invoking strict responses using modern SDK definitions
+    // FIXED: Formatted configuration matrix to use exact modern SDK standards
     const response = await ai.models.generateContent({
       model: 'gemini-1.5-flash',
       contents: contentsArray,
@@ -244,7 +246,7 @@ async function checkAnswer() {
     }
   } catch (e) {
     console.error("System connection trace:", e);
-    alert("API Error: Verify your AQ key status.");
+    alert("API Error: Verify your AQ key status or connection.");
     loadSentence();
   }
 }
