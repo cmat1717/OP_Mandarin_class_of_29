@@ -197,7 +197,8 @@ async function checkAnswer() {
   document.getElementById("userInput").disabled = true;
 
   try {
-    const genAI = new window.GoogleGenerativeAI(key);
+    // FIXED: Properly pointing to the nested constructor required by the web bundle
+    const genAI = new window.GoogleGenerativeAI.GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     let instruction = `Grade this student's translation. English baseline prompt task: "${target}". Expected baseline target answer structure: "${expected}". `;
@@ -207,7 +208,7 @@ async function checkAnswer() {
       instruction += `Examine the handwritten picture response carefully. Respond ONLY with raw valid JSON: { "isCorrect": true/false, "feedback": "review text string" }`;
       partsArray = [
         { text: instruction },
-        { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64[1] } }
+        { inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } }
       ];
     } else {
       instruction += `The student typed: "${input}". Match meaning against base text. Respond ONLY with raw valid JSON: { "isCorrect": true/false, "feedback": "review text string" }`;
