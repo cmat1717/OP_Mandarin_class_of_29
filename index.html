@@ -214,7 +214,7 @@
 
       try {
         const genAI = new GoogleGenerativeAI(key);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
         let instruction = `Grade this student's Chinese translation of: "${currentTarget.english}". Expected Chinese meaning: "${currentTarget.chinese}".`;
         if (capturedImageBase64) {
           instruction += " Evaluate the Chinese answer in the attached image.";
