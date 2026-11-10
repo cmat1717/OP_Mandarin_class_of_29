@@ -1,343 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chinese Practice App</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; background: #f8fafc; color: #1e293b; font-family: sans-serif; }
-        .container { position: relative; width: 100%; max-width: 440px; padding: 54px 22px 22px; background: #fff; border-radius: 20px; box-shadow: 0 12px 30px #0f172a14; }
-        .top-controls { position: absolute; top: 14px; right: 14px; display: flex; gap: 10px; align-items: center; }
-        .settings-toggle { border: 0; background: transparent; font-size: 22px; cursor: pointer; padding: 0; }
-        .auth-btn { background: #4f46e5; color: white; border: 0; padding: 7px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
-        .auth-btn.signed-in { background: #64748b; }
-        h1 { margin: 0 0 10px; text-align: center; font-size: 2rem; }
-        .subtitle { margin-bottom: 5px; color: #4f46e5; font-weight: 700; text-align: center; }
-        .sign-in-notice { margin: 16px 0; color: #475569; text-align: center; line-height: 1.5; }
-        .stats-bar { text-align: center; font-size: 16px; color: #64748b; margin-bottom: 18px; font-weight: 700; }
-        .api-panel { display: none; margin-bottom: 16px; padding: 12px; border-radius: 12px; background: #f1f5f9; }
-        .api-panel label { display: block; margin-bottom: 8px; color: #64748b; font-size: 12px; font-weight: 700; }
-        .api-input-group { display: flex; gap: 8px; margin-bottom: 12px; }
-        .api-input-group input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
-        .api-input-group button { padding: 10px 12px; border: 0; border-radius: 8px; background: #0f172a; color: white; cursor: pointer; }
-        .card { margin-bottom: 18px; padding: 18px 14px; border: 1px solid #e2e8f0; border-radius: 12px; }
-        .prompt-text { min-height: 28px; font-size: 20px; font-weight: 700; text-align: center; }
-        .camera-container { position: relative; display: none; width: 100%; margin-bottom: 18px; overflow: hidden; border-radius: 12px; background: #000; }
-        video { display: block; width: 100%; max-height: 300px; }
-        .capture-btn { position: absolute; left: 10px; bottom: 10px; width: calc(100% - 20px); padding: 10px 12px; border: 0; border-radius: 8px; background: #0009; color: white; cursor: pointer; }
-        .snapshot-preview { display: none; width: 100%; margin-bottom: 18px; border-radius: 12px; }
-        .input-area { position: relative; margin-bottom: 18px; }
-        .input-area input { width: 100%; padding: 14px 50px 14px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 18px; text-align: center; }
-        .camera-trigger { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); border: 0; background: transparent; font-size: 20px; cursor: pointer; }
-        .main-btn { display: block; width: 100%; padding: 14px; border: 0; border-radius: 10px; background: #4f46e5; color: white; font-size: 16px; font-weight: 700; cursor: pointer; }
-        #nextBtn { display: none; margin-top: 12px; background: #1e293b; }
-        .feedback { display: none; margin-top: 20px; padding: 15px; border-radius: 12px; font-weight: 600; }
-        .feedback.correct { border: 1px solid #a7f3d0; background: #ecfdf5; color: #065f46; }
-        .feedback.incorrect { border: 1px solid #fca5a5; background: #fef2f2; color: #991b1b; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chinese Practice App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 20px; background: #f8fafc; color: #1e293b; font-family: sans-serif; }
+    main { width: 100%; max-width: 440px; padding: 24px; background: white; border-radius: 20px; box-shadow: 0 12px 30px #0f172a14; }
+    h1, .subtitle, #statsBar { text-align: center; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    .subtitle { margin-bottom: 12px; color: #4f46e5; font-weight: 700; }
+    #statsBar { margin-bottom: 18px; color: #475569; font-size: 18px; font-weight: 700; }
+    .notice { margin-bottom: 16px; padding: 10px; border-radius: 8px; background: #f1f5f9; color: #475569; font-size: 14px; line-height: 1.4; }
+    .card { margin-bottom: 18px; padding: 20px 14px; border: 1px solid #e2e8f0; border-radius: 12px; }
+    #prompt { font-size: 20px; font-weight: 700; text-align: center; }
+    input { width: 100%; margin-bottom: 14px; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 18px; text-align: center; }
+    button { display: block; width: 100%; padding: 14px; border: 0; border-radius: 10px; background: #4f46e5; color: white; font-size: 16px; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: default; }
+    #nextBtn { display: none; margin-top: 12px; background: #1e293b; }
+    #feedback { display: none; margin-top: 16px; padding: 14px; border-radius: 10px; font-weight: 600; }
+    #feedback.correct { display: block; border: 1px solid #a7f3d0; background: #ecfdf5; color: #065f46; }
+    #feedback.incorrect { display: block; border: 1px solid #fca5a5; background: #fef2f2; color: #991b1b; }
+  </style>
 </head>
 <body>
-    <main class="container">
-        <div class="top-controls">
-            <button id="authBtn" class="auth-btn" type="button" onclick="handleAuthClick()">Sign in with Google</button>
-            <button class="settings-toggle" type="button" onclick="toggleSettings()" aria-label="Settings">⚙️</button>
-        </div>
-        <h1>Translate to Chinese</h1>
-        <div class="subtitle">Random Worksheet Sentences</div>
-        <div id="signInNotice" class="sign-in-notice" aria-live="polite">Sign in with Google to view your score and start practicing.</div>
-        <div id="apiPanel" class="api-panel">
-            <label for="clientIdInput">GOOGLE OAUTH CLIENT ID</label>
-            <div class="api-input-group">
-                <input id="clientIdInput" type="text" placeholder="Google Cloud OAuth client ID">
-                <button type="button" onclick="saveClientId()">Save</button>
-            </div>
-            <label for="apiKeyInput">GEMINI API KEY</label>
-            <div class="api-input-group">
-                <input id="apiKeyInput" type="password" placeholder="API key">
-                <button type="button" onclick="saveApiKey()">Save</button>
-            </div>
-        </div>
-        <div id="practiceContent" style="display:none">
-            <div id="statsBar" class="stats-bar" aria-live="polite">Score: 0</div>
-            <div class="card"><div id="englishPrompt" class="prompt-text">Generating translation task...</div></div>
-            <div id="cameraContainer" class="camera-container">
-                <video id="videoStream" autoplay playsinline></video>
-                <button class="capture-btn" type="button" onclick="captureSnapshot()">Use this photo</button>
-            </div>
-            <img id="snapshotPreview" class="snapshot-preview" alt="Captured answer preview">
-            <div class="input-area">
-                <input id="userInput" type="text" placeholder="Type translation..." autocomplete="off">
-                <button id="cameraBtn" class="camera-trigger" type="button" onclick="initiateCamera()" aria-label="Use camera">📷</button>
-            </div>
-            <button id="actionBtn" class="main-btn" type="button" onclick="checkAnswer()">Check Answer</button>
-            <button id="nextBtn" class="main-btn" type="button" onclick="loadSentence()">Next Sentence ➡️</button>
-            <div id="feedbackBox" class="feedback" aria-live="polite"></div>
-        </div>
-    </main>
-    <script type="module">
-        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+  <main>
+    <h1>Translate to Chinese</h1>
+    <div class="subtitle">Random Worksheet Sentences</div>
+    <div id="statsBar" aria-live="polite">Score: 0</div>
+    <div class="notice">Your score is saved on this device. No Google sign-in, API key, or account setup is needed. Answers are checked against the expected translation.</div>
+    <div class="card"><div id="prompt">Loading...</div></div>
+    <input id="answer" type="text" placeholder="Type your Chinese translation" autocomplete="off" aria-label="Chinese translation">
+    <button id="checkBtn" type="button">Check Answer</button>
+    <button id="nextBtn" type="button">Next Sentence ➡️</button>
+    <div id="feedback" aria-live="polite"></div>
+  </main>
+  <script>
+    const subjects = [
+      { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
+      { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
+      { eng: "He", ch: "他", pluralEng: "They (men)", pluralCh: "他们" },
+      { eng: "She", ch: "她", pluralEng: "They (women)", pluralCh: "她们" }
+    ];
+    const identities = [{ eng: "teacher", ch: "老师" }, { eng: "classmate", ch: "同学" }, { eng: "friend", ch: "朋友" }];
+    const languages = [{ eng: "English", ch: "英语" }, { eng: "French", ch: "法语" }, { eng: "Chinese", ch: "中文" }];
+    const pick = (items) => items[Math.floor(Math.random() * items.length)];
+    let target;
+    let score = Number(localStorage.getItem("chinese_practice_score") || 0);
+    if (!Number.isFinite(score) || score < 0) score = 0;
+    const scoreEl = document.getElementById("statsBar");
+    const answerEl = document.getElementById("answer");
+    const feedbackEl = document.getElementById("feedback");
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
 
-        let currentTarget = { english: "", chinese: "" };
-        let localStream = null;
-        let capturedImageBase64 = null;
-        let tokenClient = null;
-        let accessToken = null;
-        let progress = { totalCorrect: 0 };
-
-        const subjects = [
-            { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
-            { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
-            { eng: "He", ch: "他", pluralEng: "They (men)", pluralCh: "他们" },
-            { eng: "She", ch: "她", pluralEng: "They (women)", pluralCh: "她们" }
-        ];
-        const identities = [{ eng: "teacher", ch: "老师" }, { eng: "classmate", ch: "同学" }, { eng: "friend", ch: "朋友" }];
-        const languages = [{ eng: "English", ch: "英语" }, { eng: "French", ch: "法语" }, { eng: "Chinese", ch: "中文" }];
-        const pick = (items) => items[Math.floor(Math.random() * items.length)];
-
-        function generateRandomSentence() {
-            const subject = pick(subjects);
-            const plural = Math.random() > 0.5;
-            const en = plural ? subject.pluralEng : subject.eng;
-            const zh = plural ? subject.pluralCh : subject.ch;
-            let english, chinese;
-            switch (Math.floor(Math.random() * 5)) {
-                case 0: {
-                    const person = pick(identities);
-                    const negative = Math.random() > 0.5;
-                    const question = !negative && Math.random() > 0.5;
-                    if (negative) { english = `${en} are not ${person.eng}s.`; chinese = `${zh}不是${person.ch}`; }
-                    else if (question) { english = `Is ${en.toLowerCase()} a ${person.eng}?`; chinese = `${zh}是${person.ch}吗`; }
-                    else { english = `${en} ${plural ? "are" : "is"} a ${person.eng}.`; chinese = `${zh}是${person.ch}`; }
-                    break;
-                }
-                case 1: {
-                    const language = pick(languages);
-                    if (Math.random() > 0.5) { english = `Does ${en.toLowerCase()} study ${language.eng}?`; chinese = `${zh}学${language.ch}吗`; }
-                    else if (plural && Math.random() > 0.5) { english = `${en} all study ${language.eng}.`; chinese = `${zh}都学${language.ch}`; }
-                    else { english = `${en} study ${language.eng}.`; chinese = `${zh}学${language.ch}`; }
-                    break;
-                }
-                case 2:
-                    if (Math.random() > 0.5) { english = `Do ${en.toLowerCase()} have friends?`; chinese = `${zh}有朋友吗`; }
-                    else if (Math.random() > 0.5) { english = `${en} have friends.`; chinese = `${zh}有朋友`; }
-                    else { english = `${en} do not have friends.`; chinese = `${zh}没有朋友`; }
-                    break;
-                case 3:
-                    if (Math.random() < 1 / 3) { english = "Hello!"; chinese = "你好"; }
-                    else if (Math.random() < 0.5) { english = "Goodbye, teacher."; chinese = "再见老师"; }
-                    else { english = "Goodbye."; chinese = "再见"; }
-                    break;
-                default:
-                    if (Math.random() > 0.5) { english = `${en} ${plural ? "are" : "is"} very good.`; chinese = `${zh}很好`; }
-                    else { english = `${en} ${plural ? "are" : "is"} good.`; chinese = `${zh}好`; }
-            }
-            english = english.replace("I are", "I am").replace("I is", "I am").replace("Does we", "Do we").replace("Does they", "Do they").replace("Is I", "Am I");
-            return { english, chinese };
+    function updateScore() {
+      scoreEl.textContent = `Score: ${score}`;
+      localStorage.setItem("chinese_practice_score", String(score));
+    }
+    function makeSentence() {
+      const subject = pick(subjects);
+      const plural = Math.random() > 0.5;
+      const en = plural ? subject.pluralEng : subject.eng;
+      const zh = plural ? subject.pluralCh : subject.ch;
+      let english, chinese;
+      switch (Math.floor(Math.random() * 5)) {
+        case 0: {
+          const person = pick(identities);
+          const negative = Math.random() > 0.5;
+          const question = !negative && Math.random() > 0.5;
+          if (negative) { english = `${en} are not ${person.eng}s.`; chinese = `${zh}不是${person.ch}`; }
+          else if (question) { english = `Is ${en.toLowerCase()} a ${person.eng}?`; chinese = `${zh}是${person.ch}吗`; }
+          else { english = `${en} ${plural ? "are" : "is"} a ${person.eng}.`; chinese = `${zh}是${person.ch}`; }
+          break;
         }
-
-        function updateStatsUI() {
-            document.getElementById("statsBar").textContent = `Score: ${progress.totalCorrect}`;
+        case 1: {
+          const language = pick(languages);
+          if (Math.random() > 0.5) { english = `Does ${en.toLowerCase()} study ${language.eng}?`; chinese = `${zh}学${language.ch}吗`; }
+          else if (plural && Math.random() > 0.5) { english = `${en} all study ${language.eng}.`; chinese = `${zh}都学${language.ch}`; }
+          else { english = `${en} study ${language.eng}.`; chinese = `${zh}学${language.ch}`; }
+          break;
         }
-        function toggleSettings() {
-            const panel = document.getElementById("apiPanel");
-            panel.style.display = panel.style.display === "block" ? "none" : "block";
-        }
-        function saveApiKey() {
-            const key = document.getElementById("apiKeyInput").value.trim();
-            if (!key) return;
-            localStorage.setItem("gemini_api_key", key);
-            alert("API key saved.");
-            document.getElementById("apiPanel").style.display = "none";
-        }
-        function saveClientId() {
-            const id = document.getElementById("clientIdInput").value.trim();
-            if (!id) return;
-            localStorage.setItem("google_client_id", id);
-            initGoogleAuth();
-            alert("Google Client ID saved. Now choose Sign in with Google.");
-            document.getElementById("apiPanel").style.display = "none";
-        }
-        function initGoogleAuth() {
-            const clientId = localStorage.getItem("google_client_id");
-            if (!clientId || !window.google?.accounts?.oauth2) return false;
-            tokenClient = window.google.accounts.oauth2.initTokenClient({
-                client_id: clientId,
-                scope: "https://www.googleapis.com/auth/drive.appdata",
-                callback: async (resp) => {
-                    if (resp.error || !resp.access_token) {
-                        document.getElementById("signInNotice").textContent = "Google sign-in did not complete. Please try again.";
-                        return;
-                    }
-                    accessToken = resp.access_token;
-                    await loadProgressFromCloud();
-                    document.getElementById("authBtn").textContent = "Signed in";
-                    document.getElementById("authBtn").classList.add("signed-in");
-                    document.getElementById("signInNotice").style.display = "none";
-                    document.getElementById("practiceContent").style.display = "block";
-                    loadSentence();
-                }
-            });
-            return true;
-        }
-        function handleAuthClick() {
-            if (!localStorage.getItem("google_client_id")) {
-                document.getElementById("apiPanel").style.display = "block";
-                document.getElementById("signInNotice").textContent = "Add your Google OAuth Client ID in Settings, then sign in to continue.";
-                return;
-            }
-            if (!tokenClient && !initGoogleAuth()) {
-                document.getElementById("signInNotice").textContent = "Google sign-in is still loading. Please try again in a moment.";
-                return;
-            }
-            tokenClient.requestAccessToken({ prompt: "consent" });
-        }
-        async function listProgressFiles() {
-            const url = "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%27progress.json%27&fields=files(id,name)";
-            const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
-            if (!res.ok) throw new Error(`Google Drive list failed (${res.status})`);
-            return (await res.json()).files || [];
-        }
-        async function loadProgressFromCloud() {
-            try {
-                const files = await listProgressFiles();
-                if (files.length) {
-                    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(files[0].id)}?alt=media`, {
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    });
-                    if (!res.ok) throw new Error(`Google Drive download failed (${res.status})`);
-                    const cloudData = await res.json();
-                    if (typeof cloudData.totalCorrect === "number") progress = cloudData;
-                }
-                localStorage.setItem("local_user_progress", JSON.stringify(progress));
-                updateStatsUI();
-            } catch (err) {
-                console.error("Failed to load Google Drive score:", err);
-                document.getElementById("signInNotice").textContent = "Signed in, but your cloud score could not be loaded. Showing this device's saved score.";
-            }
-        }
-        async function saveProgressToCloud() {
-            localStorage.setItem("local_user_progress", JSON.stringify(progress));
-            if (!accessToken) return;
-            try {
-                const files = await listProgressFiles();
-                const metadata = files.length
-                    ? { name: "progress.json" }
-                    : { name: "progress.json", parents: ["appDataFolder"] };
-                const formData = new FormData();
-                formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-                formData.append("file", new Blob([JSON.stringify(progress)], { type: "application/json" }));
-                const url = files.length
-                    ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(files[0].id)}?uploadType=multipart`
-                    : "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
-                const res = await fetch(url, {
-                    method: files.length ? "PATCH" : "POST",
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                    body: formData
-                });
-                if (!res.ok) throw new Error(`Google Drive save failed (${res.status})`);
-            } catch (err) {
-                console.error("Failed to save score to Google Drive:", err);
-            }
-        }
-        function stopCamera() {
-            if (localStream) { localStream.getTracks().forEach((track) => track.stop()); localStream = null; }
-        }
-        function loadSentence() {
-            currentTarget = generateRandomSentence();
-            document.getElementById("englishPrompt").textContent = currentTarget.english;
-            const input = document.getElementById("userInput");
-            input.value = ""; input.disabled = false; input.style.display = "block";
-            document.getElementById("cameraBtn").style.display = "block";
-            document.getElementById("feedbackBox").style.display = "none";
-            document.getElementById("nextBtn").style.display = "none";
-            const action = document.getElementById("actionBtn");
-            action.style.display = "block"; action.disabled = false; action.textContent = "Check Answer";
-            document.getElementById("cameraContainer").style.display = "none";
-            document.getElementById("snapshotPreview").style.display = "none";
-            capturedImageBase64 = null; stopCamera();
-        }
-        async function initiateCamera() {
-            if (!navigator.mediaDevices?.getUserMedia) { alert("Camera access is not supported in this browser."); return; }
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                document.getElementById("videoStream").srcObject = localStream;
-                document.getElementById("cameraContainer").style.display = "block";
-                document.getElementById("snapshotPreview").style.display = "none";
-            } catch (error) { console.error("Camera access error:", error); alert("Camera access was blocked or unavailable. Check browser permissions."); }
-        }
-        function captureSnapshot() {
-            const video = document.getElementById("videoStream");
-            if (!video.videoWidth || !video.videoHeight) { alert("Camera is not ready yet."); return; }
-            const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-            capturedImageBase64 = dataUrl.split(",")[1];
-            const preview = document.getElementById("snapshotPreview");
-            preview.src = dataUrl; preview.style.display = "block";
-            document.getElementById("userInput").style.display = "none";
-            document.getElementById("cameraBtn").style.display = "none";
-            document.getElementById("cameraContainer").style.display = "none";
-            stopCamera();
-        }
-        async function checkAnswer() {
-            if (!accessToken) { alert("Please sign in with Google before practicing."); return; }
-            const input = document.getElementById("userInput").value.trim();
-            const key = localStorage.getItem("gemini_api_key");
-            if (!input && !capturedImageBase64) { alert("Please type an answer or capture a photo first!"); return; }
-            if (!key) { alert("Please provide your Gemini API key first!"); document.getElementById("apiPanel").style.display = "block"; return; }
-            const button = document.getElementById("actionBtn");
-            button.disabled = true; button.textContent = "Grading with AI...";
-            document.getElementById("userInput").disabled = true;
-            try {
-                const genAI = new GoogleGenerativeAI(key);
-                const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-                let instruction = `Grade this student's Chinese translation of: "${currentTarget.english}". Expected Chinese meaning: "${currentTarget.chinese}".`;
-                instruction += capturedImageBase64 ? " Evaluate the Chinese answer in the attached image." : ` The student's typed answer is: "${input}".`;
-                instruction += ' Judge meaning rather than requiring an exact character-for-character match. Respond only as JSON: {"isCorrect":true,"feedback":"short explanation"}.';
-                const parts = [{ text: instruction }];
-                if (capturedImageBase64) parts.push({ inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } });
-                const response = await model.generateContent({ contents: [{ role: "user", parts }] });
-                const rawText = response.response.text().trim().replace(/^```(?:json)?\s*|\s*```$/g, "");
-                const evaluation = JSON.parse(rawText);
-                if (evaluation.isCorrect) progress.totalCorrect += 1;
-                updateStatsUI(); await saveProgressToCloud();
-                const box = document.getElementById("feedbackBox");
-                box.className = `feedback ${evaluation.isCorrect ? "correct" : "incorrect"}`;
-                box.style.display = "block"; box.replaceChildren();
-                const title = document.createElement("div");
-                title.textContent = evaluation.isCorrect ? "✨ Excellent Job!" : "Keep Practicing!";
-                const detail = document.createElement("div");
-                detail.style.cssText = "font-weight:500;margin-top:5px;";
-                detail.textContent = evaluation.isCorrect ? String(evaluation.feedback || "") : `${String(evaluation.feedback || "")} (Expected: ${currentTarget.chinese})`;
-                box.append(title, detail);
-                button.style.display = "none"; document.getElementById("nextBtn").style.display = "block";
-            } catch (error) {
-                console.error("AI grading error:", error);
-                alert("AI grading failed. Please check the API key and try again.");
-                button.disabled = false; button.textContent = "Check Answer";
-                document.getElementById("userInput").disabled = false;
-            }
-        }
-        Object.assign(window, { toggleSettings, saveApiKey, saveClientId, loadSentence, initiateCamera, captureSnapshot, checkAnswer, handleAuthClick });
-        window.addEventListener("DOMContentLoaded", () => {
-            const clientId = localStorage.getItem("google_client_id");
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (clientId) document.getElementById("clientIdInput").value = clientId;
-            if (apiKey) document.getElementById("apiKeyInput").value = apiKey;
-            try {
-                const saved = JSON.parse(localStorage.getItem("local_user_progress") || "null");
-                if (saved && typeof saved.totalCorrect === "number") progress = saved;
-            } catch (_) { /* Ignore malformed local progress. */ }
-            updateStatsUI();
-            let attempts = 0;
-            const authLoader = setInterval(() => {
-                attempts++;
-                if (initGoogleAuth() || attempts >= 40) clearInterval(authLoader);
-            }, 250);
-        });
-    </script>
+        case 2:
+          if (Math.random() > 0.5) { english = `Do ${en.toLowerCase()} have friends?`; chinese = `${zh}有朋友吗`; }
+          else if (Math.random() > 0.5) { english = `${en} have friends.`; chinese = `${zh}有朋友`; }
+          else { english = `${en} do not have friends.`; chinese = `${zh}没有朋友`; }
+          break;
+        case 3:
+          if (Math.random() < 1 / 3) { english = "Hello!"; chinese = "你好"; }
+          else if (Math.random() < 0.5) { english = "Goodbye, teacher."; chinese = "再见老师"; }
+          else { english = "Goodbye."; chinese = "再见"; }
+          break;
+        default:
+          if (Math.random() > 0.5) { english = `${en} ${plural ? "are" : "is"} very good.`; chinese = `${zh}很好`; }
+          else { english = `${en} ${plural ? "are" : "is"} good.`; chinese = `${zh}好`; }
+      }
+      english = english.replace("I are", "I am").replace("I is", "I am").replace("Does we", "Do we").replace("Does they", "Do they").replace("Is I", "Am I");
+      return { english, chinese };
+    }
+    function loadSentence() {
+      target = makeSentence();
+      document.getElementById("prompt").textContent = target.english;
+      answerEl.value = "";
+      answerEl.disabled = false;
+      checkBtn.disabled = false;
+      checkBtn.style.display = "block";
+      nextBtn.style.display = "none";
+      feedbackEl.className = "";
+      feedbackEl.style.display = "none";
+      answerEl.focus();
+    }
+    function normalize(text) {
+      return text.replace(/[\s，。！？、,.!?;；:：]/g, "");
+    }
+    function checkAnswer() {
+      const answer = normalize(answerEl.value.trim());
+      if (!answer) { answerEl.focus(); return; }
+      const correct = answer === normalize(target.chinese);
+      if (correct) {
+        score += 1;
+        updateScore();
+      }
+      feedbackEl.className = correct ? "correct" : "incorrect";
+      feedbackEl.textContent = correct ? "✨ Correct! Great job!" : `Not quite. Expected answer: ${target.chinese}`;
+      feedbackEl.style.display = "block";
+      answerEl.disabled = true;
+      checkBtn.style.display = "none";
+      nextBtn.style.display = "block";
+      nextBtn.focus();
+    }
+    checkBtn.addEventListener("click", checkAnswer);
+    nextBtn.addEventListener("click", loadSentence);
+    answerEl.addEventListener("keydown", (event) => { if (event.key === "Enter") checkAnswer(); });
+    updateScore();
+    loadSentence();
+  </script>
 </body>
 </html>
