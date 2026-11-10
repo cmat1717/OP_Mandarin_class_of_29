@@ -218,7 +218,7 @@
       canvas.height = video.videoHeight;
       canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-      capturedImageBase64 = dataUrl.split(",");
+      capturedImageBase64 = dataUrl.split(",")[1];
       const preview = document.getElementById("snapshotPreview");
       preview.src = dataUrl;
       preview.style.display = "block";
@@ -227,6 +227,7 @@
       document.getElementById("cameraContainer").style.display = "none";
       stopCamera();
     }
+
     async function checkAnswer() {
       const input = document.getElementById("userInput").value.trim();
       const key = localStorage.getItem("gemini_api_key");
