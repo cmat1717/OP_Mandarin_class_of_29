@@ -39,13 +39,16 @@
     </style>
 </head>
 <body>
-    <main class="container">
+        <main class="container">
+        <!-- This adds the Sign In Button and settings side-by-side -->
         <div class="top-controls">
             <button id="authBtn" class="auth-btn" type="button" onclick="handleAuthClick()">Sign In</button>
             <button class="settings-toggle" type="button" onclick="toggleSettings()" aria-label="Settings">⚙️</button>
         </div>
         <h1>Translate to Chinese</h1>
         <div class="subtitle">Random Worksheet Sentences</div>
+        
+        <!-- This adds the Score display container -->
         <div id="statsBar" class="stats-bar">Score: 0</div>
 
         <div id="apiPanel" class="api-panel">
