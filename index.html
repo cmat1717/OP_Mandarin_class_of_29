@@ -92,7 +92,7 @@
             { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
             { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
             { eng: "He", ch: "他", pluralEng: "They (men)", pluralCh: "他们" },
-            { eng: "She", ch: "她", pluralEng: "They (women)", !!pluralCh: "她们" }
+            { eng: "She", ch: "她", pluralEng: "They (women)", pluralCh: "她们" }
         ];
         const identities = [{ eng: "teacher", ch: "老师" }, { eng: "classmate", ch: "同学" }, { eng: "friend", ch: "朋友" }];
         const languages = [{ eng: "English", ch: "英语" }, { eng: "French", ch: "法语" }, { eng: "Chinese", ch: "中文" }];
@@ -301,7 +301,7 @@
             canvas.height = video.videoHeight;
             canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-            capturedImageBase64 = dataUrl.split(",");
+            capturedImageBase64 = dataUrl.split(",")[1];
             const preview = document.getElementById("snapshotPreview");
             preview.src = dataUrl;
             preview.style.display = "block";
