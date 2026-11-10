@@ -60,14 +60,14 @@
     <button id="nextBtn" class="main-btn" type="button" onclick="loadSentence()">Next Sentence ➡️</button>
     <div id="feedbackBox" class="feedback" aria-live="polite"></div>
   </main>
-  <script type="module">
+    <script type="module">
     import { GoogleGenerativeAI } from "https://esm.run";
 
     const subjects = [
       { eng: "I", ch: "我", pluralEng: "We", pluralCh: "我们" },
       { eng: "You", ch: "你", pluralEng: "You all", pluralCh: "你们" },
       { eng: "He", ch: "他", pluralEng: "They (men)", pluralCh: "他们" },
-      { eng: "She", ch: "她", pluralEng: "They (women)", !!pluralCh: "她们" }
+      { eng: "She", ch: "她", pluralEng: "They (women)", pluralCh: "她们" }
     ];
     const identities = [{ eng: "teacher", ch: "老师" }, { eng: "classmate", ch: "同学" }, { eng: "friend", ch: "朋友" }];
     const languages = [{ eng: "English", ch: "英语" }, { eng: "French", ch: "法语" }, { eng: "Chinese", ch: "中文" }];
@@ -77,6 +77,7 @@
     let capturedImageBase64 = null;
 
     const pick = (items) => items[Math.floor(Math.random() * items.length)];
+
     function generateRandomSentence() {
       const subject = pick(subjects);
       const plural = Math.random() > 0.5;
