@@ -168,6 +168,23 @@
       document.getElementById("cameraContainer").style.display = "none";
       stopCamera();
     }
+    async function generateWithRetry(model, request, maxAttempts = 4) {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          return await model.generateContent(request);
+        } catch (error) {
+          const status = error?.status ?? error?.statusCode;
+          const message = String(error?.message ?? "");
+          const isTemporary = status === 503 || status === 429 || status >= 500 || /503|UNAVAILABLE|overloaded|temporar/i.test(message);
+          if (!isTemporary || attempt === maxAttempts - 1) {
+            throw error;
+          }
+          const delayMs = 1000 * (2 ** attempt) + Math.random() * 500;
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+      }
+      throw new Error("Gemini request failed after retries.");
+    }
     async function checkAnswer() {
       const input = document.getElementById("userInput").value.trim();
       const key = localStorage.getItem("gemini_api_key");
@@ -184,7 +201,7 @@
         instruction += ' Judge meaning rather than requiring an exact character-for-character match. Respond only as JSON: {"isCorrect":true,"feedback":"short explanation"}.';
         const contentsPayload = [{ text: instruction }];
         if (capturedImageBase64) contentsPayload.push({ inlineData: { mimeType: "image/jpeg", data: capturedImageBase64 } });
-        const response = await model.generateContent({ contents: [{ role: "user", parts: contentsPayload }] });
+        const response = await generateWithRetry(model, { contents: [{ role: "user", parts: contentsPayload }] });
         const rawText = response.response.text().trim().replace(/^```(?:json)?\s*|\s*```$/g, "");
         const evaluation = JSON.parse(rawText);
         const box = document.getElementById("feedbackBox");
@@ -201,7 +218,9 @@
         document.getElementById("nextBtn").style.display = "block";
       } catch (error) {
         console.error("AI grading error:", error);
-        alert("AI grading failed. Please check the API key and try again.");
+        console.error("Status:", error?.status ?? error?.statusCode ?? "unknown");
+        console.error("Message:", error?.message ?? "unknown");
+        alert(`AI grading failed. Please try again in a moment.\n${error?.message || "Unknown error"}`);
         button.disabled = false; button.textContent = "Check Answer";
         document.getElementById("userInput").disabled = false;
       }
