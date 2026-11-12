@@ -173,9 +173,9 @@
         try {
           return await model.generateContent(request);
         } catch (error) {
-          const status = error?.status ?? error?.statusCode;
+          const status = Number(error?.status ?? error?.statusCode);
           const message = String(error?.message ?? "");
-          const isTemporary = status === 503 || status === 429 || status >= 500 || /503|UNAVAILABLE|overloaded|temporar/i.test(message);
+          const isTemporary = status === 503 || (status >= 500 && status <= 599) || /503|UNAVAILABLE|overloaded|temporar/i.test(message);
           if (!isTemporary || attempt === maxAttempts - 1) {
             throw error;
           }
@@ -220,7 +220,12 @@
         console.error("AI grading error:", error);
         console.error("Status:", error?.status ?? error?.statusCode ?? "unknown");
         console.error("Message:", error?.message ?? "unknown");
-        alert(`AI grading failed. Please try again in a moment.\n${error?.message || "Unknown error"}`);
+        const status = Number(error?.status ?? error?.statusCode);
+        const message = String(error?.message ?? "");
+        const isRateLimited = status === 429 || /\b429\b|RESOURCE_EXHAUSTED/i.test(message);
+        alert(isRateLimited
+          ? "There have been too many requests in a short amount of time. Please take a break"
+          : `AI grading failed. Please try again in a moment.\n${error?.message || "Unknown error"}`);
         button.disabled = false; button.textContent = "Check Answer";
         document.getElementById("userInput").disabled = false;
       }
