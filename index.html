@@ -10,7 +10,8 @@
     .container { position: relative; width: 100%; max-width: 440px; padding: 30px 22px 22px; background: #fff; border-radius: 20px; box-shadow: 0 12px 30px #0f172a14; }
     .settings-toggle { position: absolute; top: 14px; right: 14px; border: 0; background: transparent; font-size: 22px; cursor: pointer; }
     h1 { margin: 0 0 10px; text-align: center; font-size: 2rem; }
-    .subtitle { margin-bottom: 18px; color: #4f46e5; font-weight: 700; text-align: center; }
+    .subtitle { margin-bottom: 12px; color: #4f46e5; font-weight: 700; text-align: center; }
+    .vocabulary { margin: 0 0 16px; color: #64748b; font-size: 18px; line-height: 1.7; text-align: center; }
     .api-panel { display: none; margin-bottom: 16px; padding: 12px; border-radius: 12px; background: #f1f5f9; }
     .api-panel label { display: block; margin-bottom: 8px; color: #64748b; font-size: 12px; font-weight: 700; }
     .api-input-group { display: flex; gap: 8px; }
@@ -37,6 +38,9 @@
     <button class="settings-toggle" type="button" onclick="toggleSettings()" aria-label="Settings">⚙️</button>
     <h1>Translate to Chinese</h1>
     <div class="subtitle">Random Worksheet Sentences</div>
+    <div class="vocabulary" aria-label="Chinese vocabulary">
+      谁 · 这 · 那 · 会 · 不会 · 也 · 打 · 踢 · 足球 · 篮球 · 跳水 · 网球
+    </div>
     <div id="apiPanel" class="api-panel">
       <label for="apiKeyInput">GEMINI API KEY</label>
       <div class="api-input-group">
@@ -69,6 +73,12 @@
     ];
     const identities = [{ eng: "teacher", ch: "老师" }, { eng: "classmate", ch: "同学" }, { eng: "friend", ch: "朋友" }];
     const languages = [{ eng: "English", ch: "英语" }, { eng: "French", ch: "法语" }, { eng: "Chinese", ch: "中文" }];
+    const sports = [
+      { eng: "soccer", ch: "足球", verb: "踢" },
+      { eng: "basketball", ch: "篮球", verb: "打" },
+      { eng: "diving", ch: "跳水", verb: "跳" },
+      { eng: "tennis", ch: "网球", verb: "打" }
+    ];
     let currentTarget = { english: "", chinese: "" };
     let localStream = null;
     let capturedImageBase64 = null;
@@ -80,8 +90,59 @@
       const en = plural ? subject.pluralEng : subject.eng;
       const zh = plural ? subject.pluralCh : subject.ch;
       let english, chinese;
-      switch (Math.floor(Math.random() * 5)) {
+
+      switch (Math.floor(Math.random() * 13)) {
         case 0: {
+          const person = pick(identities);
+          english = `Who is ${person.eng}?`;
+          chinese = `谁是${person.ch}吗`;
+          break;
+        }
+        case 1:
+          english = "This is a friend.";
+          chinese = "这是朋友";
+          break;
+        case 2:
+          english = "That is a teacher.";
+          chinese = "那是老师";
+          break;
+        case 3:
+          english = `${en} can study Chinese.`;
+          chinese = `${zh}${plural ? "会" : "会"}学中文`;
+          break;
+        case 4:
+          english = `${en} cannot study English.`;
+          chinese = `${zh}不会学英语`;
+          break;
+        case 5:
+          english = `${en} are also good.`;
+          chinese = `${zh}也很好`;
+          break;
+        case 6:
+          english = `${en} ${plural ? "play" : "plays"} basketball.`;
+          chinese = `${zh}打篮球`;
+          break;
+        case 7:
+          english = `${en} ${plural ? "kick" : "kicks"} a soccer ball.`;
+          chinese = `${zh}踢足球`;
+          break;
+        case 8:
+          english = `Does ${en.toLowerCase()} play tennis?`;
+          chinese = `${zh}打网球吗`;
+          break;
+        case 9:
+          english = `${en} ${plural ? "dive" : "dives"}.`;
+          chinese = `${zh}跳水`;
+          break;
+        case 10:
+          english = `${en} can play basketball.`;
+          chinese = `${zh}会打篮球`;
+          break;
+        case 11:
+          english = `${en} cannot play soccer.`;
+          chinese = `${zh}不会踢足球`;
+          break;
+        default: {
           const person = pick(identities);
           const negative = Math.random() > 0.5;
           const question = !negative && Math.random() > 0.5;
@@ -90,27 +151,8 @@
           else { english = `${en} ${plural ? "are" : "is"} a ${person.eng}.`; chinese = `${zh}是${person.ch}`; }
           break;
         }
-        case 1: {
-          const language = pick(languages);
-          if (Math.random() > 0.5) { english = `Does ${en.toLowerCase()} study ${language.eng}?`; chinese = `${zh}学${language.ch}吗`; }
-          else if (plural && Math.random() > 0.5) { english = `${en} all study ${language.eng}.`; chinese = `${zh}都学${language.ch}`; }
-          else { english = `${en} study ${language.eng}.`; chinese = `${zh}学${language.ch}`; }
-          break;
-        }
-        case 2:
-          if (Math.random() > 0.5) { english = `Do ${en.toLowerCase()} have friends?`; chinese = `${zh}有朋友吗`; }
-          else if (Math.random() > 0.5) { english = `${en} have friends.`; chinese = `${zh}有朋友`; }
-          else { english = `${en} do not have friends.`; chinese = `${zh}没有朋友`; }
-          break;
-        case 3:
-          if (Math.random() < 1 / 3) { english = "Hello!"; chinese = "你好"; }
-          else if (Math.random() < 0.5) { english = "Goodbye, teacher."; chinese = "再见老师"; }
-          else { english = "Goodbye."; chinese = "再见"; }
-          break;
-        default:
-          if (Math.random() > 0.5) { english = `${en} ${plural ? "are" : "is"} very good.`; chinese = `${zh}很好`; }
-          else { english = `${en} ${plural ? "are" : "is"} good.`; chinese = `${zh}好`; }
       }
+
       english = english.replace("I are", "I am").replace("I is", "I am").replace("Does we", "Do we").replace("Does they", "Do they").replace("Is I", "Am I");
       return { english, chinese };
     }
@@ -176,9 +218,7 @@
           const status = Number(error?.status ?? error?.statusCode);
           const message = String(error?.message ?? "");
           const isTemporary = status === 503 || (status >= 500 && status <= 599) || /503|UNAVAILABLE|overloaded|temporar/i.test(message);
-          if (!isTemporary || attempt === maxAttempts - 1) {
-            throw error;
-          }
+          if (!isTemporary || attempt === maxAttempts - 1) throw error;
           const delayMs = 1000 * (2 ** attempt) + Math.random() * 500;
           await new Promise((resolve) => setTimeout(resolve, delayMs));
         }
@@ -218,14 +258,10 @@
         document.getElementById("nextBtn").style.display = "block";
       } catch (error) {
         console.error("AI grading error:", error);
-        console.error("Status:", error?.status ?? error?.statusCode ?? "unknown");
-        console.error("Message:", error?.message ?? "unknown");
         const status = Number(error?.status ?? error?.statusCode);
         const message = String(error?.message ?? "");
         const isRateLimited = status === 429 || /\b429\b|RESOURCE_EXHAUSTED/i.test(message);
-        alert(isRateLimited
-          ? "There have been too many requests in a short amount of time. Please take a break"
-          : `AI grading failed. Please try again in a moment.\n${error?.message || "Unknown error"}`);
+        alert(isRateLimited ? "There have been too many requests in a short amount of time. Please take a break" : `AI grading failed. Please try again in a moment.\n${error?.message || "Unknown error"}`);
         button.disabled = false; button.textContent = "Check Answer";
         document.getElementById("userInput").disabled = false;
       }
